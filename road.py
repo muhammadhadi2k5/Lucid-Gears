@@ -30,27 +30,31 @@ class Road:
         self._draw_surface(screen)
         self._draw_rungs(screen)
 
-    def _width_at(self, depth):
+    def width_at(self, depth):
         eased = depth ** 2
         return self.TOP_WIDTH + (self.BOTTOM_WIDTH - self.TOP_WIDTH) * eased
 
-    def _y_at(self, depth):
+    def y_at(self, depth):
         eased = depth ** 2
         return self.horizon_y + (self.screen_height - self.horizon_y) * eased
 
+    def x_at(self, depth, offset):
+        """Screen x at a given depth and lateral offset (-1 left edge .. 1 right edge)."""
+        return self.center_x + offset * self.width_at(depth) / 2
+
     def _depth_at_y(self, y):
-        # inverse of _y_at - undo the square with a square root
+        # inverse of y_at - undo the square with a square root
         fraction = (y - self.horizon_y) / (self.screen_height - self.horizon_y)
         return fraction ** 0.5
 
     def edges_at_y(self, y):
         """Left/right x of the road at a given screen y, for keeping the car on it."""
-        width = self._width_at(self._depth_at_y(y))
+        width = self.width_at(self._depth_at_y(y))
         return self.center_x - width / 2, self.center_x + width / 2
 
     def _draw_surface(self, screen):
-        top_w = self._width_at(0)
-        bottom_w = self._width_at(1)
+        top_w = self.width_at(0)
+        bottom_w = self.width_at(1)
         points = [
             (self.center_x - top_w / 2, self.horizon_y),
             (self.center_x + top_w / 2, self.horizon_y),
@@ -64,8 +68,8 @@ class Road:
         depth_step = 1 / self.RUNG_COUNT
         for i in range(self.RUNG_COUNT):
             depth = (i * depth_step + self.scroll) % 1.0
-            y = self._y_at(depth)
-            width = self._width_at(depth)
+            y = self.y_at(depth)
+            width = self.width_at(depth)
             left = self.center_x - width / 2
             right = self.center_x + width / 2
             pygame.draw.line(screen, self.EDGE_COLOR, (left, y), (right, y), 2)

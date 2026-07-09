@@ -1,6 +1,7 @@
 import pygame
 
 from car import PlayerCar
+from obstacle import Obstacle
 from road import Road
 
 # shared here so nothing else has to hardcode these numbers
@@ -26,6 +27,15 @@ class Game:
         start_x = SCREEN_WIDTH / 2 - PlayerCar.WIDTH / 2
         start_y = SCREEN_HEIGHT - PlayerCar.HEIGHT - 20
         self.player = PlayerCar(start_x, start_y)
+
+        # TEMPORARY: a couple of obstacles so we can see the class work
+        # before building a real spawner. Both start at the horizon
+        # (depth=0); one is static (speed=0), one is oncoming (speed>0) so
+        # it closes the distance faster and passes the static one.
+        self.obstacles = [
+            Obstacle(offset=0.4, speed=0.0),
+            Obstacle(offset=-0.3, speed=0.1),
+        ]
 
     def run(self):
         """The main game loop: handle input, update, draw. Repeat."""
@@ -55,9 +65,15 @@ class Game:
         left, right = self.road.edges_at_y(self.player.y + PlayerCar.HEIGHT)
         self.player.clamp_x(left, right)
 
+        for obstacle in self.obstacles:
+            obstacle.update(dt, self.road.SCROLL_SPEED)
+
     def _draw(self):
         self.screen.fill((0, 0, 0))  # wipe last frame so nothing smears
         self.road.draw(self.screen)
+        for obstacle in self.obstacles:
+            if not obstacle.is_off_screen():
+                obstacle.draw(self.screen, self.road)
         self.player.draw(self.screen)
         pygame.display.flip()
 
