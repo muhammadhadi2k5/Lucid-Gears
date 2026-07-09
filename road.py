@@ -38,6 +38,16 @@ class Road:
         eased = depth ** 2
         return self.horizon_y + (self.screen_height - self.horizon_y) * eased
 
+    def _depth_at_y(self, y):
+        # inverse of _y_at - undo the square with a square root
+        fraction = (y - self.horizon_y) / (self.screen_height - self.horizon_y)
+        return fraction ** 0.5
+
+    def edges_at_y(self, y):
+        """Left/right x of the road at a given screen y, for keeping the car on it."""
+        width = self._width_at(self._depth_at_y(y))
+        return self.center_x - width / 2, self.center_x + width / 2
+
     def _draw_surface(self, screen):
         top_w = self._width_at(0)
         bottom_w = self._width_at(1)

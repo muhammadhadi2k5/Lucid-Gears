@@ -32,6 +32,9 @@ class PlayerCar:
         if self.moving_right:
             self.x += self.SPEED * dt
 
+    def clamp_x(self, left, right):
+        self.x = max(left, min(self.x, right - self.WIDTH))
+
     def draw(self, screen):
         rect = pygame.Rect(self.x, self.y, self.WIDTH, self.HEIGHT)
         pygame.draw.rect(screen, self.COLOR, rect)

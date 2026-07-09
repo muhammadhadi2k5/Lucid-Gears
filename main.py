@@ -16,7 +16,7 @@ class Game:
         pygame.init()  # always first, before any other pygame call
 
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        pygame.display.set_caption("Lucid Gears")
+        pygame.display.set_caption("Lucid")
 
         self.clock = pygame.time.Clock()
         self.running = True
@@ -51,6 +51,9 @@ class Game:
     def _update(self, dt):
         self.road.update(dt)
         self.player.update(dt)
+
+        left, right = self.road.edges_at_y(self.player.y + PlayerCar.HEIGHT)
+        self.player.clamp_x(left, right)
 
     def _draw(self):
         self.screen.fill((0, 0, 0))  # wipe last frame so nothing smears
