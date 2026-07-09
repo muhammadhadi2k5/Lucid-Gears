@@ -1,5 +1,7 @@
 import pygame
 
+from car import PlayerCar
+
 # Window size, in pixels. Defined once here so every other class can
 # reference these same numbers instead of guessing at hardcoded values.
 SCREEN_WIDTH = 800
@@ -24,15 +26,22 @@ class Game:
         # Controls whether the loop below keeps running.
         self.running = True
 
+        # Start the car roughly centered horizontally, near the bottom.
+        start_x = SCREEN_WIDTH / 2 - PlayerCar.WIDTH / 2
+        start_y = SCREEN_HEIGHT - PlayerCar.HEIGHT - 20
+        self.player = PlayerCar(start_x, start_y)
+
     def run(self):
         """The main game loop: handle input, update, draw. Repeat."""
         while self.running:
-            self._handle_events()
-            self._update()
-            self._draw()
+            # clock.tick(FPS) both caps the frame rate AND tells us how many
+            # milliseconds the last frame took. Divide by 1000 to get dt in
+            # seconds, which is what PlayerCar.update() expects.
+            dt = self.clock.tick(FPS) / 1000
 
-            # Pause just long enough to keep us at FPS frames per second.
-            self.clock.tick(FPS)
+            self._handle_events()
+            self._update(dt)
+            self._draw()
 
         pygame.quit()
 
@@ -43,15 +52,20 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
 
-    def _update(self):
-        # Nothing to update yet — this is where car/obstacle movement
-        # will go once those classes exist.
-        pass
+        # get_pressed() gives the current held-down state of every key,
+        # which is what we want for "steer while the key is held."
+        keys = pygame.key.get_pressed()
+        self.player.handle_input(keys)
+
+    def _update(self, dt):
+        self.player.update(dt)
 
     def _draw(self):
         # Fill the whole screen with black before drawing anything else,
         # otherwise each frame would paint over the last one and smear.
         self.screen.fill((0, 0, 0))
+
+        self.player.draw(self.screen)
 
         # Flip the newly drawn frame onto the actual visible window.
         pygame.display.flip()
