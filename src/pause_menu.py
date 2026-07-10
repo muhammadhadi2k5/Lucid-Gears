@@ -87,17 +87,23 @@ class PauseMenu:
 
     def _draw_window_frame(self, screen):
         window = self.window_rect
-        pygame.draw.rect(screen, self.BODY_COLOR, window)
-
-        # 3D bevel border - light on top/left, dark on bottom/right, same
-        # trick as the buttons use to look "raised" off the screen
         t = self.BORDER_THICKNESS
-        pygame.draw.line(screen, self.BORDER_LIGHT, window.topleft, window.topright, t)
-        pygame.draw.line(screen, self.BORDER_LIGHT, window.topleft, window.bottomleft, t)
-        pygame.draw.line(screen, self.BORDER_DARK, window.bottomleft, window.bottomright, t)
-        pygame.draw.line(screen, self.BORDER_DARK, window.topright, window.bottomright, t)
 
-        title_bar = pygame.Rect(window.left, window.top, window.width, self.TITLE_BAR_HEIGHT)
+        # 3D bevel border, built from solid rectangles rather than lines.
+        # pygame.draw.line doesn't join cleanly at 90-degree corners (it
+        # leaves a small gap), so instead: fill the whole frame dark, then
+        # lay a lighter rect over everything except a t-px strip on the
+        # bottom/right, then punch out the actual interior on top. That
+        # leaves exactly a t-px light border on top/left and dark on
+        # bottom/right, with solid overlapping corners and no gaps.
+        pygame.draw.rect(screen, self.BORDER_DARK, window)
+        pygame.draw.rect(screen, self.BORDER_LIGHT,
+                          pygame.Rect(window.left, window.top, window.width - t, window.height - t))
+
+        interior = pygame.Rect(window.left + t, window.top + t, window.width - 2 * t, window.height - 2 * t)
+        pygame.draw.rect(screen, self.BODY_COLOR, interior)
+
+        title_bar = pygame.Rect(interior.left, interior.top, interior.width, self.TITLE_BAR_HEIGHT)
         pygame.draw.rect(screen, self.TITLE_BAR_COLOR, title_bar)
         pygame.draw.line(screen, self.BORDER_DARK, title_bar.bottomleft, title_bar.bottomright, 2)
 

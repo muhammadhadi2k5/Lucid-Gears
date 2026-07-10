@@ -2,11 +2,15 @@ import pygame
 
 
 class Button:
-    """A clickable button styled like an old mechanical keycap: it sits
-    raised above a dark "well", and presses flush down into it on click.
+    """A clickable button drawn as a single face (holding the label) sitting
+    in front of a dark wall to its left. Idle, the face sits out away from
+    the wall, showing a thin dark sliver on its left - the socket it's about
+    to sink into. Pressing slides the whole face straight left, flush
+    against the wall, hiding that sliver - like pushing a real button in.
     """
 
-    POP_HEIGHT = 6  # pixels the cap sits above the well when idle
+    DEPTH = 10     # how far out from the wall the face sits when idle, and how far it slides on press
+    CHAMFER = 8    # size of the 45-degree cut on the face's left corners, where the wall shows through
 
     def __init__(self, center_x, center_y, width, height, label, font,
                  base_color, hover_color, pressed_color,
@@ -38,12 +42,11 @@ class Button:
         return self.rect.collidepoint(mouse_pos)
 
     def draw(self, screen):
-        # the well: a fixed dark socket the cap sits in
-        pygame.draw.rect(screen, (25, 25, 25), self.rect)
-
-        # the cap: popped up when idle, flush with the well when pressed
-        offset = 0 if self.pressed else -self.POP_HEIGHT
-        cap_rect = self.rect.move(0, offset)
+        # self.rect is the face's resting (idle) position - also what hit
+        # testing uses, so the clickable area matches what's drawn normally.
+        # The wall is fixed DEPTH pixels to its left, and never moves.
+        wall_rect = self.rect.move(-self.DEPTH, 0)
+        pygame.draw.rect(screen, (15, 15, 15), wall_rect)
 
         if self.pressed:
             face_color = self.pressed_color
@@ -54,21 +57,48 @@ class Button:
         else:
             face_color = self.base_color
             text_color = self.base_text_color
-        pygame.draw.rect(screen, face_color, cap_rect)
 
-        # bevel: a lighter edge on top/left, darker on bottom/right, to sell
-        # the raised-plastic look. Skipped while pressed, since a pressed key
-        # sits flat and shouldn't look raised.
+        # idle: the face sits at self.rect, DEPTH pixels clear of the wall,
+        # leaving a dark sliver visible on its left. Pressed: the face
+        # slides left by DEPTH, landing flush on the wall - the sliver
+        # disappears because the face now fully covers it.
+        offset = -self.DEPTH if self.pressed else 0
+        face_rect = self.rect.move(offset, 0)
+
+        # face as a single filled polygon, not a plain rectangle - the whole
+        # left side is ONE diagonal line (top-left corner shortened, bottom-
+        # left corner shortened, connected directly to each other) instead
+        # of two small separate notches. Two independent corner notches are
+        # forced by geometry to lean opposite ways (chamfering top-to-left
+        # always rises left-to-right, chamfering bottom-to-left always
+        # falls left-to-right - that's just which edges they connect, not a
+        # choice). A single diagonal spanning the whole height is the only
+        # way to get one consistent lean.
+        left, right = face_rect.left, face_rect.right
+        top, bottom = face_rect.top, face_rect.bottom
+        chamfer = min(self.CHAMFER, (bottom - top) / 2, (right - left) / 2)
+
+        face_polygon = [
+            (left + chamfer, top),
+            (right, top),
+            (right, bottom),
+            (left, bottom - chamfer),
+        ]
+        pygame.draw.polygon(screen, face_color, face_polygon)
+
+        # bevel: light top edge, dark right/bottom edges - sells the "flat
+        # plastic surface catching light from the top-left" look. Skipped
+        # while pressed, since a pressed face sits flush and shouldn't
+        # look raised.
         if not self.pressed:
             light_edge = self._shade(face_color, 50)
             dark_edge = self._shade(face_color, -50)
-            pygame.draw.line(screen, light_edge, cap_rect.topleft, cap_rect.topright, 3)
-            pygame.draw.line(screen, light_edge, cap_rect.topleft, cap_rect.bottomleft, 3)
-            pygame.draw.line(screen, dark_edge, cap_rect.bottomleft, cap_rect.bottomright, 3)
-            pygame.draw.line(screen, dark_edge, cap_rect.topright, cap_rect.bottomright, 3)
+            pygame.draw.line(screen, light_edge, (left + chamfer, top), (right, top), 3)
+            pygame.draw.line(screen, dark_edge, (right, top), (right, bottom), 3)
+            pygame.draw.line(screen, dark_edge, (right, bottom), (left, bottom - chamfer), 3)
 
         text_surface = self.font.render(self.label, True, text_color)
-        text_rect = text_surface.get_rect(center=cap_rect.center)
+        text_rect = text_surface.get_rect(center=face_rect.center)
         screen.blit(text_surface, text_rect)
 
     @staticmethod
