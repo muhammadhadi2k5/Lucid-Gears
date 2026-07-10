@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scenes/race/player_car.gd" id="1_car"]
 
 [node name="PlayerCar" type="Area2D"]
+process_mode = 1
 script = ExtResource("1_car")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
