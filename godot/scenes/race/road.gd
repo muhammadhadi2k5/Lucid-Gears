@@ -4,8 +4,8 @@ extends Node2D
 ## the bottom of the screen; width/x/y at a given depth are all eased
 ## with depth^2 so things appear to accelerate toward the viewer.
 
-@export var screen_width: float = 1280
-@export var screen_height: float = 720
+var screen_width: float
+var screen_height: float
 
 const TOP_WIDTH := 60.0
 const BOTTOM_WIDTH := 1100.0
@@ -20,6 +20,9 @@ var horizon_y: float
 var scroll: float = 0.0
 
 func _ready() -> void:
+	var viewport_size := get_viewport_rect().size
+	screen_width = viewport_size.x
+	screen_height = viewport_size.y
 	center_x = screen_width / 2.0
 	horizon_y = screen_height * 0.4
 
