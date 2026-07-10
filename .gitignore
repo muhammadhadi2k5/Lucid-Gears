@@ -1,6 +1,7 @@
 storyline.md
 PROJECT_CONTEXT.md
 STORY_ROADMAP.md
+GODOT_BUILD_ROADMAP.md
 __pycache__/
 *.pyc
 *.pyo
