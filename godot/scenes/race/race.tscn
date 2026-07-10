@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scenes/race/race.gd" id="1_race"]
 [ext_resource type="PackedScene" path="res://scenes/race/road.tscn" id="2_road"]
 [ext_resource type="PackedScene" path="res://scenes/race/player_car.tscn" id="3_car"]
 [ext_resource type="Script" path="res://scenes/race/obstacle_spawner.gd" id="4_spawner"]
+[ext_resource type="PackedScene" path="res://scenes/ui/health_gauge.tscn" id="5_gauge"]
 
 [node name="Race" type="Node2D"]
 script = ExtResource("1_race")
@@ -14,3 +15,7 @@ script = ExtResource("1_race")
 script = ExtResource("4_spawner")
 
 [node name="PlayerCar" parent="." instance=ExtResource("3_car")]
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="HealthGauge" parent="HUD" instance=ExtResource("5_gauge")]
