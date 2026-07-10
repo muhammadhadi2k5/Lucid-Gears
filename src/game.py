@@ -7,6 +7,7 @@ from .menu import StartMenu
 from .obstacle_spawner import ObstacleSpawner
 from .pause_menu import PauseMenu
 from .road import Road
+from .story import OBSTACLES_START_TIME, OPENING_SCRIPT, StoryManager
 
 # shared here so nothing else has to hardcode these numbers
 SCREEN_WIDTH = 800
@@ -53,6 +54,7 @@ class Game:
         self.player = PlayerCar(start_x, start_y)
 
         self.obstacle_spawner = ObstacleSpawner()
+        self.story = StoryManager(OPENING_SCRIPT, SCREEN_WIDTH)
 
         # fade_alpha is how opaque the black overlay drawn on top of the race
         # is: 255 = fully black (nothing visible), 0 = fully cleared. It only
@@ -138,7 +140,11 @@ class Game:
         left, right = self.road.edges_at_y(self.player.y + PlayerCar.HEIGHT)
         self.player.clamp_x(left, right)
 
-        self.obstacle_spawner.update(dt, self.road.SCROLL_SPEED)
+        self.story.update(dt)
+
+        # no obstacles until the AI has actually warned about them
+        if self.story.elapsed >= OBSTACLES_START_TIME:
+            self.obstacle_spawner.update(dt, self.road.SCROLL_SPEED)
 
         # hit_timer also doubles as invincibility, so a hit obstacle can't
         # be immediately followed by another one stacking more damage
@@ -168,6 +174,7 @@ class Game:
 
             segments = PlayerCar.MAX_HEALTH // PlayerCar.HIT_DAMAGE
             self.health_gauge.draw(self.screen, self.player.health, PlayerCar.MAX_HEALTH, segments)
+            self.story.draw(self.screen)
 
             if self.fade_alpha > 0:
                 self.fade_surface.set_alpha(int(self.fade_alpha))
