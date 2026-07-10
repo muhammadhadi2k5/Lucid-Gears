@@ -44,6 +44,15 @@ class ObstacleSpawner:
         # list doesn't grow forever
         self.obstacles = [o for o in self.obstacles if not o.is_off_screen()]
 
+    def check_collision(self, player_rect, road):
+        # removes the first obstacle the player touches and reports the hit -
+        # only one hit per frame matters since Game grants invincibility after
+        for obstacle in self.obstacles:
+            if obstacle.get_rect(road).colliderect(player_rect):
+                self.obstacles.remove(obstacle)
+                return True
+        return False
+
     def draw(self, screen, road):
         for obstacle in self.obstacles:
             obstacle.draw(screen, road)

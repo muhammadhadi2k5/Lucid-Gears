@@ -123,6 +123,12 @@ class Game:
 
         self.obstacle_spawner.update(dt, self.road.SCROLL_SPEED)
 
+        # hit_timer also doubles as invincibility, so a hit obstacle can't
+        # be immediately followed by another one stacking more damage
+        if self.player.hit_timer <= 0:
+            if self.obstacle_spawner.check_collision(self.player.get_rect(), self.road):
+                self.player.take_hit()
+
         if self.fade_alpha > 0:
             fade_per_second = 255 / self.FADE_IN_DURATION
             self.fade_alpha = max(0.0, self.fade_alpha - fade_per_second * dt)

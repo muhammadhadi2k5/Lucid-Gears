@@ -33,11 +33,12 @@ class Obstacle:
     def is_off_screen(self):
         return self.depth > 1.0
 
-    def draw(self, screen, road):
+    def get_rect(self, road):
         width = road.width_at(self.depth) * self.SIZE_FRACTION
         height = width * self.HEIGHT_RATIO
         center_x = road.x_at(self.depth, self.offset)
         bottom_y = road.y_at(self.depth)
+        return pygame.Rect(center_x - width / 2, bottom_y - height, width, height)
 
-        rect = pygame.Rect(center_x - width / 2, bottom_y - height, width, height)
-        pygame.draw.rect(screen, self.COLOR, rect)
+    def draw(self, screen, road):
+        pygame.draw.rect(screen, self.COLOR, self.get_rect(road))

@@ -4,10 +4,8 @@ from .menu import Button
 
 
 class PauseMenu:
-    """The pause overlay: a small Windows-95-style window with CONTINUE,
-    RESTART, and EXIT buttons. Drawn on top of the (frozen) race scene, with
-    the background dimmed so the window reads as a modal popup rather than a
-    full-screen menu.
+    """Pause overlay: small Windows-95-style window with CONTINUE, RESTART,
+    and MAIN MENU buttons, over a dimmed frozen race scene.
     """
 
     WINDOW_WIDTH = 300
@@ -15,20 +13,20 @@ class PauseMenu:
     TITLE_BAR_HEIGHT = 30
     BORDER_THICKNESS = 3
 
-    BORDER_LIGHT = (255, 190, 150)   # bevel highlight - light warm tint
-    BORDER_DARK = (60, 25, 10)       # bevel shadow
-    BODY_COLOR = (20, 20, 30)         # matches the road surface's dark color
-    TITLE_BAR_COLOR = (255, 90, 40)   # brand orange
+    BORDER_LIGHT = (255, 190, 150)
+    BORDER_DARK = (60, 25, 10)
+    BODY_COLOR = (20, 20, 30)
+    TITLE_BAR_COLOR = (255, 90, 40)
     TITLE_TEXT_COLOR = (0, 0, 0)
 
-    DIM_OVERLAY_ALPHA = 160  # how dark the frozen race behind the window gets
+    DIM_OVERLAY_ALPHA = 160
 
     BUTTON_BASE_COLOR = (255, 90, 40)
-    BUTTON_HOVER_COLOR = (74, 26, 130)    # dark retro purple - reads as "interactive"
-    BUTTON_PRESSED_COLOR = (46, 16, 82)   # darker still - reads as "pushed in"
+    BUTTON_HOVER_COLOR = (74, 26, 130)
+    BUTTON_PRESSED_COLOR = (46, 16, 82)
 
-    BUTTON_BASE_TEXT_COLOR = (0, 0, 0)         # black reads fine on the orange
-    BUTTON_HOVER_TEXT_COLOR = (255, 255, 255)   # black isn't readable on the purple, so white
+    BUTTON_BASE_TEXT_COLOR = (0, 0, 0)
+    BUTTON_HOVER_TEXT_COLOR = (255, 255, 255)
 
     def __init__(self, screen_width, screen_height):
         self.window_rect = pygame.Rect(0, 0, self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
@@ -37,8 +35,6 @@ class PauseMenu:
         self.title_font = pygame.font.SysFont("consolas,couriernew,monospace", 20, bold=True)
         self.button_font = pygame.font.SysFont("consolas,couriernew,monospace", 20, bold=True)
 
-        # pre-built once - a full-screen black surface we just re-blit with a
-        # fixed alpha each frame, rather than redrawing it from scratch
         self.dim_surface = pygame.Surface((screen_width, screen_height))
         self.dim_surface.fill((0, 0, 0))
         self.dim_surface.set_alpha(self.DIM_OVERLAY_ALPHA)
@@ -89,13 +85,7 @@ class PauseMenu:
         window = self.window_rect
         t = self.BORDER_THICKNESS
 
-        # 3D bevel border, built from solid rectangles rather than lines.
-        # pygame.draw.line doesn't join cleanly at 90-degree corners (it
-        # leaves a small gap), so instead: fill the whole frame dark, then
-        # lay a lighter rect over everything except a t-px strip on the
-        # bottom/right, then punch out the actual interior on top. That
-        # leaves exactly a t-px light border on top/left and dark on
-        # bottom/right, with solid overlapping corners and no gaps.
+        # bevel border via solid rects, not lines - lines leave gaps at corners
         pygame.draw.rect(screen, self.BORDER_DARK, window)
         pygame.draw.rect(screen, self.BORDER_LIGHT,
                           pygame.Rect(window.left, window.top, window.width - t, window.height - t))
