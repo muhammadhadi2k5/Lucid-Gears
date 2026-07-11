@@ -1,7 +1,7 @@
 extends Control
 
-@onready var play_button: Button = $CenterContainer/VBoxContainer/PlayButton
-@onready var options_button: Button = $CenterContainer/VBoxContainer/OptionsButton
+@onready var play_button: BaseButton = $CenterContainer/VBoxContainer/ButtonRow/PlayButton
+@onready var options_button: BaseButton = $CenterContainer/VBoxContainer/ButtonRow/OptionsButton
 
 func _ready() -> void:
 	play_button.pressed.connect(_on_play_pressed)

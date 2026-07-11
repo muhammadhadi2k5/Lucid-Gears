@@ -1,7 +1,7 @@
 extends Control
 
 @onready var fullscreen_toggle: CheckButton = $CenterContainer/VBoxContainer/FullscreenToggle
-@onready var back_button: Button = $CenterContainer/VBoxContainer/BackButton
+@onready var back_button: BaseButton = $CenterContainer/VBoxContainer/BackButton
 
 func _ready() -> void:
 	fullscreen_toggle.button_pressed = get_window().mode == Window.MODE_FULLSCREEN

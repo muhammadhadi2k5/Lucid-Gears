@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/options_menu.gd" id="1_options"]
+[ext_resource type="PackedScene" path="res://scenes/ui/keycap_button.tscn" id="2_keycap"]
 
 [node name="OptionsMenu" type="Control"]
 anchors_preset = 15
@@ -30,6 +31,7 @@ theme_override_constants/separation = 24
 alignment = 1
 
 [node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+theme_override_colors/font_color = Color(1.0, 0.353, 0.157, 1)
 theme_override_font_sizes/font_size = 48
 text = "OPTIONS"
 horizontal_alignment = 1
@@ -37,6 +39,6 @@ horizontal_alignment = 1
 [node name="FullscreenToggle" type="CheckButton" parent="CenterContainer/VBoxContainer"]
 text = "Fullscreen"
 
-[node name="BackButton" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(200, 50)
-text = "BACK"
+[node name="BackButton" parent="CenterContainer/VBoxContainer" instance=ExtResource("2_keycap")]
+layout_mode = 2
+label_text = "BACK"
