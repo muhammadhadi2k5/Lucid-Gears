@@ -1,3 +1,6 @@
-[gd_resource type="Theme" format=3]
+[gd_resource type="Theme" format=3 uid="uid://bor8mf843ucco"]
+
+[ext_resource type="FontFile" uid="uid://dvvxuie15t8te" path="res://assets/fonts/Talina DEMO.otf" id="1_cviax"]
 
 [resource]
+default_font = ExtResource("1_cviax")
